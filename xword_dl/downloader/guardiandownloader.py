@@ -3,6 +3,7 @@ import json
 
 import puz
 import requests
+import time
 
 from bs4 import BeautifulSoup
 
@@ -46,6 +47,11 @@ class GuardianDownloader(BaseDownloader):
         puzzle.width  = xword_data.get('dimensions').get('cols')
 
         puzzle.title = unidecode(xword_data.get('name', ''))
+        puzzle.solution_seconds = xword_data.get('dateSolutionAvailable')
+        current_seconds = int(round(time.time() * 1000))
+        
+        if (puzzle.solution_seconds > current_seconds):
+            puzzle.title += ' -no solution provided'
 
         if not all(e.get('solution') for e in xword_data['entries']):
             puzzle.title += ' - no solution provided'
